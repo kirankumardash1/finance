@@ -1,9 +1,13 @@
 package com.budget.app.security;
 
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.commons.logging.Log;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -20,13 +24,16 @@ import java.util.List;
 @Component
 public class ApiKeyAuthFilter extends OncePerRequestFilter {
 
+    private static final Logger logger =
+            LoggerFactory.getLogger(ApiKeyAuthFilter.class);
+
 
     private static final String API_KEY_HEADER = "X-API-Key";
 
     private final String expectedApiKey;
 
     public ApiKeyAuthFilter(
-            @Value("${security.api-key:}") String expectedApiKey) {
+            @Value("${app.security.api-key}") String expectedApiKey) {
         this.expectedApiKey = expectedApiKey;
     }
 
@@ -35,6 +42,10 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         return path.startsWith("/swagger-ui")
                 || path.startsWith("/v3/api-docs");
+    }
+    @PostConstruct
+    void logResolvedKey() {
+        logger.info("Resolved API key at startup = [{}]", expectedApiKey);
     }
 
     @Override
@@ -76,4 +87,5 @@ public class ApiKeyAuthFilter extends OncePerRequestFilter {
 
         filterChain.doFilter(request, response);
     }
+
 }

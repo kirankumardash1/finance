@@ -1,2 +1,18 @@
-security:
-  api-key: ${SECURITY_API_KEY:}
+spring:
+  application:
+    name: app
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  flyway:
+    enabled: true
+
+app:
+  security:
+    api-key:  __UNSET__
