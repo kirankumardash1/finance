@@ -1,0 +1,2 @@
+security:
+  api-key: ${SECURITY_API_KEY:}
